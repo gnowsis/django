@@ -24,6 +24,11 @@ class AlreadyRegistered(Exception):
 class NotRegistered(Exception):
     pass
 
+import logging
+import datetime
+_accesslog = logging.getLogger("adminaccess")
+
+
 class AdminSite(object):
     """
     An AdminSite object encapsulates an instance of the Django admin application, ready
@@ -145,7 +150,18 @@ class AdminSite(object):
         Returns True if the given HttpRequest has permission to view
         *at least one* page in the admin site.
         """
-        return request.user.is_active and request.user.is_staff
+        has_perm = request.user.is_active and request.user.is_staff
+        if has_perm:
+            try:
+                _accesslog.info("%s [%s] %s - %s?%s" %(
+                    request.user.username,
+                    request.META['REMOTE_ADDR'],
+                    request.META['REQUEST_METHOD'],
+                    request.META["PATH_INFO"],
+                    request.META['QUERY_STRING'] ))
+            except:
+                pass #explicitly silent
+        return has_perm
 
     def check_dependencies(self):
         """
