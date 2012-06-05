@@ -1,6 +1,9 @@
 from django.core.management.base import BaseCommand
+from django.dispatch import Signal
 
 from optparse import make_option
+
+testserver_setup = Signal(providing_args=('db_name',))
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
@@ -27,6 +30,8 @@ class Command(BaseCommand):
 
         # Create a test database.
         db_name = connection.creation.create_test_db(verbosity=verbosity, autoclobber=not interactive)
+
+        testserver_setup.send(self, db_name=db_name)
 
         # Import the fixture data into the test database.
         call_command('loaddata', *fixture_labels, **{'verbosity': verbosity})
