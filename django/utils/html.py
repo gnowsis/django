@@ -145,10 +145,7 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
         if '.' in word or '@' in word or ':' in word:
             # Deal with punctuation.
             lead, middle, trail = '', word, ''
-            for punctuation in TRAILING_PUNCTUATION:
-                if middle.endswith(punctuation):
-                    middle = middle[:-len(punctuation)]
-                    trail = punctuation + trail
+
             for opening, closing in WRAPPING_PUNCTUATION:
                 if middle.startswith(opening):
                     middle = middle[len(opening):]
@@ -158,6 +155,11 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
                     and middle.count(closing) == middle.count(opening) + 1):
                     middle = middle[:-len(closing)]
                     trail = closing + trail
+
+            for punctuation in TRAILING_PUNCTUATION:
+                if middle.endswith(punctuation):
+                    middle = middle[:-len(punctuation)]
+                    trail = punctuation + trail
 
             # Make URL we want to point to.
             url = None
