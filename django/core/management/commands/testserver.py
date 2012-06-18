@@ -31,10 +31,10 @@ class Command(BaseCommand):
         # Create a test database.
         db_name = connection.creation.create_test_db(verbosity=verbosity, autoclobber=not interactive)
 
-        testserver_setup.send(self, db_name=db_name)
-
         # Import the fixture data into the test database.
         call_command('loaddata', *fixture_labels, **{'verbosity': verbosity})
+
+        testserver_setup.send(self, db_name=db_name)
 
         # Run the development server. Turn off auto-reloading because it causes
         # a strange error -- it causes this handle() method to be called
