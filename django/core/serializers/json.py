@@ -4,6 +4,8 @@ Serialize data to/from JSON
 
 import datetime
 import decimal
+import uuid
+
 from StringIO import StringIO
 
 from django.core.serializers.python import Serializer as PythonSerializer
@@ -53,6 +55,8 @@ class DjangoJSONEncoder(simplejson.JSONEncoder):
         elif isinstance(o, datetime.time):
             return o.strftime(self.TIME_FORMAT)
         elif isinstance(o, decimal.Decimal):
+            return str(o)
+        elif isinstance(o, uuid.UUID):
             return str(o)
         else:
             return super(DjangoJSONEncoder, self).default(o)
